@@ -1,0 +1,7 @@
+---
+lynis_ignored_warnings: "{{ pup_lynis_main_lynis_ignored_warnings }}"
+# Delete current one (/etc/lynis/ubuntu-workstation.prf)
+lynis_custom_profile_path: "{{ pup_lynis_main_lynis_custom_profile_path }}"
+
+warning_file: "{{ pup_lynis_main_warning_file }}"
+warning_message: "{{ pup_lynis_main_warning_message }}"

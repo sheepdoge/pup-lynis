@@ -1,0 +1,8 @@
+---
+
+# Install lynis and cron
+#
+# Install the custom profile
+#
+# Set up a cron job which posts to custom bash file (defaults to bash file) on
+# failure
