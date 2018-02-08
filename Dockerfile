@@ -1,7 +1,8 @@
 FROM ubuntu:16.04
 
-RUN apt-get update -qq
-RUN apt-get -y install \
+RUN apt-get update -qq && \
+  apt-get -y install \
+  apt-transport-https \
   build-essential \
   git \
   python \
@@ -16,6 +17,7 @@ RUN mkdir /sheepdoge-test
 WORKDIR /sheepdoge-test
 
 ADD tasks ./tasks
+ADD templates ./templates
 ADD vars ./vars
 ADD tests/* ./
 
