@@ -2,5 +2,13 @@
 - hosts: localhost
   connection: local
 
+  vars:
+    ignored_warnings:
+      - NETW-2704 # Nameserver doesn't respond.
+      - NETW-2705 # Can't find two working nameservers.
+
+    profile_name: test
+    reporting_file: /root/.bashrc
+
   tasks:
     - include_tasks: tasks/main.yml

@@ -1,8 +1,53 @@
 ---
 
-# Install lynis and cron
-#
-# Install the custom profile
-#
-# Set up a cron job which posts to custom bash file (defaults to bash file) on
-# failure
+- block:
+  - name: update apt cache
+    apt:
+      update_cache: yes
+      cache_valid_time: 3600
+
+  - name: install cron
+    apt:
+      name: cron
+      state: latest
+
+  - name: add lynis apt key
+    apt_key:
+      url: "https://packages.cisofy.com/keys/cisofy-software-public.key"
+
+  - name: add lynis apt repository
+    apt_repository:
+      repo: "deb https://packages.cisofy.com/community/lynis/deb/ xenial main"
+      state: present
+
+  - name: install lynis
+    apt:
+      name: lynis
+      state: latest
+
+  - set_fact:
+      profile_path: "/etc/lynis/{{ profile_name }}.prf"
+
+  - name: copy the lynis configuration file
+    template:
+      src: lynis/profile.prf
+      dest: "{{ profile_path }}"
+
+  - set_fact:
+      lynis_failure_msg: "echo WARNING: lynis system audit failed"
+
+  - set_fact:
+      lynis_cron_job: >
+        lynis audit system --cronjob --profile {{ profile_path }} ||
+        more {{ reporting_file }} | grep -q {{ lynis_failure_msg }} ||
+        echo {{ lynis_failure_msg }} >> {{ reporting_file }}
+
+  - name: create the cron job automating the lynis run
+    cron:
+      name: "host auditing with lynis"
+      minute: "0"
+      hour: "*"
+      job: "{{ lynis_cron_job }}"
+      user: root
+
+  become: yes
