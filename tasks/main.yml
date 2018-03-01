@@ -36,8 +36,13 @@
   - set_fact:
       lynis_failure_msg: "\"echo WARNING: lynis system audit failed\""
 
+  # @TODO(mmcnaughton): Remove this error message if the task is successful. We
+  # could do this by having a separate `.lynis_message` file, which we delete if
+  # its successful. We could then source it from the bashrc.
   - set_fact:
       lynis_cron_job: >
+        apt update &&
+        unattended-upgrade &&
         lynis audit system --cronjob --profile {{ profile_path }} ||
         more {{ reporting_file }} | grep -q {{ lynis_failure_msg }} ||
         echo {{ lynis_failure_msg }} >> {{ reporting_file }}
@@ -45,7 +50,7 @@
   - name: create the cron job automating the lynis run
     cron:
       name: "host auditing with lynis"
-      minute: "0"
+      minute: "30"
       hour: "*"
       job: "{{ lynis_cron_job }}"
       user: root
